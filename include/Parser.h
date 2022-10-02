@@ -5,6 +5,7 @@
 #include <functional>
 #include <limits>
 #include <stdexcept>
+#include <charconv>
 
 /**
  * C++20 functional parser created by Petter Holmberg
@@ -257,6 +258,20 @@ private:
     F func;
 };
 
+template <typename T>
+auto appendedVector(std::vector<T> x, const T& y) -> std::vector<T>
+{
+    x.push_back(y);
+    return x;
+}
+
+template <typename T>
+auto appendedVector(std::vector<T> x, const std::vector<T>& vec) -> std::vector<T>
+{
+    x.insert(x.end(), vec.cbegin(), vec.cend());
+    return x;
+}
+
 template<Parser P>
 requires std::same_as<ParserValue<P>, char>
 constexpr Parser auto many(P parser)
@@ -269,6 +284,18 @@ constexpr Parser auto many(P parser)
 }
 
 template<Parser P>
+constexpr Parser auto many(P parser)
+{
+    using T = ParserValue<P>;
+    using Ts = std::vector<T>;
+    return ReduceMany(
+        Ts{},
+        parser,
+        [](Ts const& ts, T const& t){ return appendedVector(ts, t); }
+    );
+}
+
+template<Parser P>
 requires std::same_as<ParserValue<P>, char>
 constexpr Parser auto some(P parser)
 {
@@ -278,6 +305,20 @@ constexpr Parser auto some(P parser)
         many(parser)
     );
 }
+
+template<Parser P>
+constexpr Parser auto some(P parser)
+{
+    using T = ParserValue<P>;
+    using Ts = std::vector<T>;
+    return sequence(
+        [](const T& item, const Ts& vec) { return appendedVector(Ts{item}, vec); },
+        parser,
+        many(parser)
+    );
+}
+
+
 
 template<class, template<class...> class>
 inline constexpr bool is_specialization = false;
@@ -305,121 +346,151 @@ constexpr Parser auto flatten(P parser)
 
 // Helpers
 
-template<std::unsigned_integral T>
-auto fromString(const std::string& input) -> std::optional<T>
+template<std::integral T>
+constexpr auto maxLengthOfType() -> uint32_t
 {
-    // std::stoull accepts negative numbers and negates them. This behaviour is not undesirable
-    if (input.starts_with('-'))
-    {
-        return {};
-    }
-
-    try
-    {
-        const auto result = std::stoull(input);
-
-        if (result > std::numeric_limits<T>::max() ||
-            result < std::numeric_limits<T>::min())
-        {
-            return {};
-        }
-        return result;
-    }
-    catch (const std::invalid_argument&)
-    {
-        return {};
-    }
-    catch (const std::out_of_range&)
-    {
-        return {};
-    }
-}
-
-template<std::signed_integral T>
-auto fromString(const std::string& input) -> std::optional<T>
-{
-    try
-    {
-        const auto result = std::stoll(input);
-
-        if (result > std::numeric_limits<T>::max() ||
-            result < std::numeric_limits<T>::min())
-        {
-            return {};
-        }
-        return result;
-    }
-    catch (const std::invalid_argument&)
-    {
-        return {};
-    }
-    catch (const std::out_of_range&)
-    {
-        return {};
-    }
+    return std::numeric_limits<T>::digits10 + 2;
 }
 
 template<std::floating_point T>
-auto fromString(const std::string& input) -> std::optional<T>;
-
-template<>
-auto fromString<float>(const std::string& input) -> std::optional<float>
+constexpr auto maxLengthOfType() -> uint32_t
 {
-    try
-    {
-        const auto result = std::stof(input);
+    return std::numeric_limits<T>::max_exponent10 +
+           std::numeric_limits<T>::max_digits10 + 2;
+}
 
-        return result;
-    }
-    catch (const std::invalid_argument&)
+template<std::integral T>
+[[nodiscard]] auto stringToNumber(const std::string& number) -> std::optional<T>
+{
+    T result;
+    const auto[ptr, code] {std::from_chars(number.data(), number.data() + number.size(), result)};
+
+    if (code == std::errc::invalid_argument || code == std::errc::result_out_of_range)
     {
         return {};
     }
-    catch (const std::out_of_range&)
+
+    return result;
+}
+
+/**
+ * GCC does not support std::from_chars for floating point types (although it is standardized)
+ */
+#if defined(__clang__) || defined(_MSC_VER)
+
+template<std::floating_point T>
+auto stringToNumber(const std::string& number) -> std::optional<T>
+{
+    T result;
+    auto const[ptr, code] {std::from_chars(number.data(), number.data() + number.size(), result)};
+
+    if (code == std::errc::invalid_argument || code == std::errc::result_out_of_range)
+    {
+        return {};
+    }
+
+    return result;
+}
+
+#else
+
+template<std::floating_point T>
+auto stringToNumber(const std::string& number) -> std::optional<T>
+{
+    try
+    {
+        if constexpr (std::same_as<T, float>)
+        {
+            return std::stof(number);
+        }
+        else if constexpr (std::same_as<T, double>)
+        {
+            return std::stod(number);
+        }
+        else
+        {
+            return std::stold(number);
+        }
+    }
+    catch (const std::out_of_range& e)
+    {
+        return {};
+    }
+    catch (const std::invalid_argument& e)
     {
         return {};
     }
 }
 
-template<>
-auto fromString<double>(const std::string& input) -> std::optional<double>
-{
-    try
-    {
-        const auto result = std::stod(input);
+#endif
 
-        return result;
-    }
-    catch (const std::invalid_argument&)
-    {
-        return {};
-    }
-    catch (const std::out_of_range&)
-    {
-        return {};
-    }
+inline bool isEol(char symbol)
+{
+    return symbol == '\r' || symbol == '\n';
+}
+
+inline bool isSpaceNotEol(char symbol)
+{
+    return ::isspace(symbol) && !isEol(symbol);
 }
 
 // Basic parsers
 
-Parser auto digit = satisfy(::isdigit);
-Parser auto lower = satisfy(::islower);
-Parser auto upper = satisfy(::isupper);
-Parser auto letter = choice(lower, upper);
-Parser auto alphanum = choice(letter, digit);
-Parser auto whitespace = many(satisfy(::isspace));
-Parser auto eol = choice(str("\r\n"), str("\r"), str("\n"));
+inline Parser auto digit = satisfy(::isdigit);
+inline Parser auto lower = satisfy(::islower);
+inline Parser auto upper = satisfy(::isupper);
+inline Parser auto letter = satisfy(::isalpha);
+inline Parser auto notLetter = satisfy(std::not_fn(::isalpha));
+inline Parser auto alphanum = satisfy(::isalnum);
+inline Parser auto whitespace = satisfy(::isspace);
+inline Parser auto whitespaces = many(satisfy(::isspace));
+inline Parser auto whitespaceNotEol = satisfy(isSpaceNotEol);
+inline Parser auto whitespacesNotEol = many(satisfy(isSpaceNotEol));
+inline Parser auto eol = satisfy(isEol);
+inline Parser auto eols = many(satisfy(isEol));
+inline Parser auto line = sequence([](const auto& line, const auto&) {return line;},
+                                   many(satisfy(std::not_fn(isEol))),
+                                   choice(str("\r\n"), str("\n\r"), str("\n"), str("\r")));
 
-constexpr Parser auto token(Parser auto parser)
+template<Parser P = decltype(whitespaces)>
+constexpr Parser auto token(Parser auto parser, P toSkip = whitespaces)
 {
-    return chain(skip(whitespace, parser), [](const auto& thing) {
-        return skip(whitespace, unit(thing));
-    });
+    return sequence(
+        [](auto const& thing, const auto&){ return thing; },
+        skip(toSkip, parser),
+        toSkip
+    );
+}
+
+template<Parser P = decltype(whitespaces)>
+constexpr Parser auto tokenLeft(Parser auto parser, P toSkip = whitespaces)
+{
+    return sequence(
+        [](auto const& thing){ return thing; },
+        skip(toSkip, parser)
+    );
+}
+
+template<Parser P = decltype(whitespaces)>
+constexpr Parser auto tokenRight(Parser auto parser, P toSkip = whitespaces)
+{
+    return sequence(
+        [](auto const& thing, const auto&){ return thing; },
+        parser,
+        toSkip
+    );
 }
 
 template<std::integral T = int32_t>
 Parser auto natural = flatten(sequence(
-    [](auto const& str) { return fromString<T>(str); },
+    [](auto const& str) { return stringToNumber<T>(str); },
+    some(digit)
+));
+
+template<std::integral T = int32_t>
+Parser auto negative = flatten(sequence(
+    [](const auto ch, const auto& str) { return stringToNumber<T>(std::string{ch} + str); },
+    symbol('-'),
     some(digit)
 ));
 
@@ -427,15 +498,11 @@ Parser auto natural = flatten(sequence(
 template<std::signed_integral T = int32_t>
 Parser auto integer = choice(
     natural<T>,
-    sequence(
-        [](auto, const auto natural) { return -natural; },
-        symbol('-'),
-        natural<T>
-    )
+    negative<T>
 );
 
 template<std::floating_point T = double>
-Parser auto real = flatten(sequence([](const auto& str) { return fromString<T>(str); },
+Parser auto real = flatten(sequence([](const auto& str) { return stringToNumber<T>(str); },
                                     choice(
                                         sequence([](auto minus, const auto& x, auto, const auto& y) {
                                                      return

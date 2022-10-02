@@ -31,8 +31,4 @@ struct Content
     Graph graph;
 };
 
-auto addName(const MetaData& metaData, const std::optional<std::string>& name) -> MetaData;
-auto addComment(const MetaData& metaData, const std::optional<std::string>& comment) -> MetaData;
-auto addType(const MetaData& metaData, const std::optional<Type>& type) -> MetaData;
-
 }

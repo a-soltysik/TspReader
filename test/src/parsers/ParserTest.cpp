@@ -46,6 +46,14 @@ TEST(ParserTest, Letter)
     ASSERT_THROW(fp::letter("@2").value(), std::bad_optional_access);
 }
 
+TEST(ParserTest, WhitespaceNotEol)
+{
+    ASSERT_NO_THROW(fp::whitespacesNotEol("\ra").value());
+    EXPECT_EQ(fp::whitespacesNotEol(" \t\v\f")->second, "");
+
+    EXPECT_EQ(fp::whitespacesNotEol("\n\t\v\f")->first, "");
+}
+
 TEST(ParserTest, Natural)
 {
     ASSERT_NO_THROW(fp::natural<int>("11abc").value());
