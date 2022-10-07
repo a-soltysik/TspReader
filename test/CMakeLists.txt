@@ -13,7 +13,7 @@ set(${TEST_NAME}_SRC_DIR ${${TEST_NAME}_DIR}/src)
 
 set(${TEST_NAME}_SRC_LIST
     ${${PROJECT_NAME}_SRC_DIR}/parsers/SubParsers.cpp
-    ${${PROJECT_NAME}_SRC_DIR}/parsers/TspTags.cpp
+    ${${PROJECT_NAME}_SRC_DIR}/parsers/Tags.cpp
     )
 
 set(${TEST_NAME}_SRC_LIST

@@ -3,9 +3,14 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include <optional>
 
-namespace Tsp
+namespace tsp
 {
+
+template<typename... Ts>
+struct match : Ts ... { using Ts::operator()...; };
+template<typename... Ts> match(Ts...) -> match<Ts...>;
 
 using namespace std::string_view_literals;
 
@@ -107,8 +112,8 @@ struct Eof
 struct Node2d
 {
     uint32_t id;
-    float x;
-    float y;
+    double x;
+    double y;
 };
 
 struct Nodes2d
@@ -119,9 +124,9 @@ struct Nodes2d
 struct Node3d
 {
     uint32_t id;
-    float x;
-    float y;
-    float z;
+    double x;
+    double y;
+    double z;
 };
 
 struct Nodes3d
@@ -210,7 +215,7 @@ struct Specification
 
 struct Data
 {
-    std::variant<Nodes2d, Nodes3d> nodeCoordSection;
+    std::optional<std::variant<Nodes2d, Nodes3d>> nodeCoordSection;
     //std::optional<std::vector<uint32_t>> depotSection; TODO
     //std::optional<std::vector<uint32_t>> demandSection; TODO
     std::optional<std::vector<int32_t>> edgeDataSection;

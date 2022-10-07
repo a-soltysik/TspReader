@@ -1,9 +1,9 @@
 #pragma once
 
 #include "Parser.h"
-#include "TspTags.h"
+#include "Tags.h"
 
-namespace Tsp
+namespace tsp
 {
 
 [[nodiscard]]

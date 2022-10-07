@@ -33,3 +33,6 @@
 
 /cmake-*
 /.idea
+/build
+/out
+/.vs

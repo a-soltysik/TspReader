@@ -1,6 +1,6 @@
 #include "SubParsers.h"
 
-namespace Tsp
+namespace tsp
 {
 
 auto name(std::string_view input) -> fp::Result<Name>
@@ -43,11 +43,25 @@ auto type(std::string_view input) -> fp::Result<AlgorithmType>
     )(input);
 }
 
-[[nodiscard]]
-auto dimension(std::string_view input) -> fp::Result<Dimension>;
+auto dimension(std::string_view input) -> fp::Result<Dimension>
+{
+    return fp::sequence(
+        [](const auto&, auto, auto dimension) { return Dimension {dimension}; },
+        fp::str("DIMENSION"),
+        fp::token(fp::symbol(':')),
+        fp::natural<uint32_t>
+    )(input);
+}
 
-[[nodiscard]]
-auto capacity(std::string_view input) -> fp::Result<Capacity>;
+auto capacity(std::string_view input) -> fp::Result<Capacity>
+{
+    return fp::sequence(
+        [](const auto&, auto, auto capacity) { return Capacity {capacity}; },
+        fp::str("CAPACITY"),
+        fp::token(fp::symbol(':')),
+        fp::natural<uint32_t>
+    )(input);
+}
 
 auto edgeWeightType(std::string_view input) -> fp::Result<EdgeWeightType>
 {
@@ -120,9 +134,9 @@ auto node2d(std::string_view input) -> fp::Result<Node2d>
            auto y, auto) { return Node2d {id, x, y}; },
         fp::natural<uint32_t>,
         fp::some(fp::whitespaceNotEol),
-        fp::real<float>,
+        fp::real<double>,
         fp::some(fp::whitespaceNotEol),
-        fp::tokenRight(fp::real<float>, fp::whitespacesNotEol),
+        fp::tokenRight(fp::real<double>, fp::whitespacesNotEol),
         fp::eol
     )(input);
 }
@@ -146,11 +160,11 @@ auto node3d(std::string_view input) -> fp::Result<Node3d>
         },
         fp::natural<uint32_t>,
         fp::some(fp::whitespaceNotEol),
-        fp::real<float>,
+        fp::real<double>,
         fp::some(fp::whitespaceNotEol),
-        fp::real<float>,
+        fp::real<double>,
         fp::some(fp::whitespaceNotEol),
-        fp::tokenRight(fp::real<float>, fp::whitespacesNotEol),
+        fp::tokenRight(fp::real<double>, fp::whitespacesNotEol),
         fp::eol
     )(input);
 }
@@ -198,6 +212,8 @@ auto tspData(std::string_view input) -> fp::Result<Config>
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, name),
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, type),
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, comment),
+                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, dimension),
+                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, capacity),
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeWeightType),
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeWeightFormat),
                             fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeDataFormat),
