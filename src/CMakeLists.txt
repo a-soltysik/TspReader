@@ -10,7 +10,7 @@ file(GLOB_RECURSE ${PROJECT_NAME}_INC_LIST
     )
 
 add_library(${PROJECT_NAME}
-    SHARED
+    STATIC
     ${${PROJECT_NAME}_SRC_LIST}
     )
 
