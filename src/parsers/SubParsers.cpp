@@ -1,78 +1,81 @@
 #include "SubParsers.h"
 
+#include <iostream>
+
 namespace tsp
 {
 
-auto name(std::string_view input) -> fp::Result<Name>
+template<typename ItemT>
+auto tokenizedLine(std::string_view input) -> fp::Result<TspData::Item>
 {
     return fp::sequence(
-        [](const auto&, auto, const auto& name) { return Name {name}; },
-        fp::str("NAME"),
-        fp::token(fp::symbol(':')),
-        fp::many(fp::satisfy(std::not_fn(fp::isEol)))
+        [](const auto& name) { return ItemT {name}; },
+        fp::tokenLeft(fp::line)
     )(input);
 }
 
-auto comment(std::string_view input) -> fp::Result<Comment>
+template<std::unsigned_integral T, typename ItemT>
+auto tokenizedNatural(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence(
-        [](const auto&, auto, const auto& comment) { return Comment {comment}; },
-        fp::str("COMMENT"),
-        fp::token(fp::symbol(':')),
-        fp::many(fp::satisfy(std::not_fn(fp::isEol)))
+    return fp::sequence([](auto dimension) { return ItemT {dimension}; },
+        fp::tokenLeft(fp::natural<T>)
     )(input);
 }
 
-auto type(std::string_view input) -> fp::Result<AlgorithmType>
+template<std::integral T, typename ItemT>
+auto tokenizedIntegers(std::string_view input) -> fp::Result<TspData::Item>
+{
+    return fp::sequence([](const auto& integers) { return ItemT {integers}; },
+                        fp::some(fp::tokenLeft(fp::integer<T>))
+    )(input);
+}
+
+auto name(std::string_view input) -> fp::Result<TspData::Item>
+{
+    return tokenizedLine<Name>(input);
+}
+
+auto comment(std::string_view input) -> fp::Result<TspData::Item>
+{
+    return tokenizedLine<Comment>(input);
+}
+
+auto type(std::string_view input) -> fp::Result<TspData::Item>
 {
     using
     enum AlgorithmType;
 
     return fp::sequence(
-        [](const auto&, auto, auto type) { return type; },
-        fp::str("TYPE"),
-        fp::token(fp::symbol(':')),
-        fp::choice(
+        [](auto type) { return type; },
+        fp::tokenLeft(fp::choice(
             fp::sequence([](const auto&) { return TSP; }, fp::str("TSP")),
             fp::sequence([](const auto&) { return ATSP; }, fp::str("ATSP")),
             fp::sequence([](const auto&) { return SOP; }, fp::str("SOP")),
             fp::sequence([](const auto&) { return HCP; }, fp::str("HCP")),
             fp::sequence([](const auto&) { return CRVP; }, fp::str("CRVP")),
             fp::sequence([](const auto&) { return TOUR; }, fp::str("TOUR"))
-        )
+        ))
     )(input);
 }
 
-auto dimension(std::string_view input) -> fp::Result<Dimension>
+auto dimension(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence(
-        [](const auto&, auto, auto dimension) { return Dimension {dimension}; },
-        fp::str("DIMENSION"),
-        fp::token(fp::symbol(':')),
-        fp::natural<uint32_t>
-    )(input);
+    return tokenizedNatural<uint32_t, Dimension>(input);
 }
 
-auto capacity(std::string_view input) -> fp::Result<Capacity>
+auto capacity(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence(
-        [](const auto&, auto, auto capacity) { return Capacity {capacity}; },
-        fp::str("CAPACITY"),
-        fp::token(fp::symbol(':')),
-        fp::natural<uint32_t>
-    )(input);
+    return tokenizedNatural<uint32_t, Capacity>(input);
 }
 
-auto edgeWeightType(std::string_view input) -> fp::Result<EdgeWeightType>
+auto edgeWeightType(std::string_view input) -> fp::Result<TspData::Item>
 {
     using
     enum EdgeWeightType;
 
     return fp::sequence(
-        [](const auto&, auto, auto type) { return type; },
-        fp::str("EDGE_WEIGHT_TYPE"),
-        fp::token(fp::symbol(':')),
-        choice(
+        [](auto type) { return type; },
+        fp::tokenLeft(fp::choice(
             fp::sequence([](const auto&) { return EXPLICIT; }, fp::str("EXPLICIT")),
             fp::sequence([](const auto&) { return EUC; }, fp::str("EUC_2D")),
             fp::sequence([](const auto&) { return EUC; }, fp::str("EUC_3D")),
@@ -82,20 +85,18 @@ auto edgeWeightType(std::string_view input) -> fp::Result<EdgeWeightType>
             fp::sequence([](const auto&) { return MAN; }, fp::str("MAN_3D")),
             fp::sequence([](const auto&) { return CEIL; }, fp::str("CEIL_2D")),
             fp::sequence([](const auto&) { return GEO; }, fp::str("GEO"))
-        )
+        ))
     )(input);
 }
 
-auto edgeWeightFormat(std::string_view input) -> fp::Result<EdgeWeightFormat>
+auto edgeWeightFormat(std::string_view input) -> fp::Result<TspData::Item>
 {
     using
     enum EdgeWeightFormat;
 
     return fp::sequence(
-        [](const auto&, auto, auto format) { return format; },
-        fp::str("EDGE_WEIGHT_FORMAT"),
-        fp::token(fp::symbol(':')),
-        choice(
+        [](auto format) { return format; },
+        fp::tokenLeft(fp::choice(
             fp::sequence([](const auto&) { return FUNCTION; }, fp::str("FUNCTION")),
             fp::sequence([](const auto&) { return FULL_MATRIX; }, fp::str("FULL_MATRIX")),
             fp::sequence([](const auto&) { return UPPER_ROW; }, fp::str("UPPER_ROW")),
@@ -106,23 +107,21 @@ auto edgeWeightFormat(std::string_view input) -> fp::Result<EdgeWeightFormat>
             fp::sequence([](const auto&) { return LOWER_COL; }, fp::str("LOWER_COL")),
             fp::sequence([](const auto&) { return UPPER_DIAG_COL; }, fp::str("UPPER_DIAG_COL")),
             fp::sequence([](const auto&) { return LOWER_DIAG_COL; }, fp::str("LOWER_DIAG_COL"))
-        )
+        ))
     )(input);
 }
 
-auto edgeDataFormat(std::string_view input) -> fp::Result<EdgeDataFormat>
+auto edgeDataFormat(std::string_view input) -> fp::Result<TspData::Item>
 {
     using
     enum EdgeDataFormat;
 
     return fp::sequence(
-        [](const auto&, auto, auto format) { return format; },
-        fp::str("EDGE_DATA_FORMAT"),
-        fp::token(fp::symbol(':')),
-        choice(
+        [](auto format) { return format; },
+        fp::tokenLeft(fp::choice(
             fp::sequence([](const auto&) { return EDGE_LIST; }, fp::str("EDGE_LIST")),
             fp::sequence([](const auto&) { return ADJ_LIST; }, fp::str("ADJ_LIST"))
-        )
+        ))
     )(input);
 }
 
@@ -176,52 +175,71 @@ auto nodes3d(std::string_view input) -> fp::Result<NodeCoordSection>
     )(input);
 }
 
-auto nodeCoordSection(std::string_view input) -> fp::Result<NodeCoordSection>
+auto nodeCoordSection(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence([](const auto&, const auto&, const auto& nodes) { return NodeCoordSection {nodes}; },
-                        fp::str("NODE_COORD_SECTION"),
-                        fp::token(fp::symbol(':')),
-                        (fp::choice(
+    return fp::sequence([](const auto& nodes) { return NodeCoordSection {nodes}; },
+                        fp::choice(
                             nodes2d,
-                            nodes3d))
+                            nodes3d)
     )(input);
 }
 
-auto edgeDataSection(std::string_view input) -> fp::Result<EdgeDataSection>
+auto edgeDataSection(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence([](const auto&, auto, const auto& data) { return EdgeDataSection {data}; },
-                        fp::str("EDGE_DATA_SECTION"),
-                        fp::token(fp::symbol(':')),
-                        fp::some(fp::tokenLeft(fp::integer<int32_t>))
-    )(input);
+    return tokenizedIntegers<int32_t, EdgeDataSection>(input);
 }
 
-auto edgeWeightSection(std::string_view input) -> fp::Result<EdgeWeightSection>
+auto edgeWeightSection(std::string_view input) -> fp::Result<TspData::Item>
 {
-    return fp::sequence([](const auto&, auto, const auto& weights) { return EdgeWeightSection {weights}; },
-                        fp::str("EDGE_WEIGHT_SECTION"),
-                        fp::token(fp::symbol(':')),
-                        fp::some(fp::tokenLeft(fp::integer<int32_t>))
-    )(input);
+    return tokenizedIntegers<int32_t, EdgeWeightSection>(input);
+}
+
+auto tag(std::string_view input) -> fp::Result<std::string>
+{
+    return fp::sequence([](const auto& tag, auto) { return tag; },
+                        fp::many(fp::satisfy([](auto symbol) { return symbol != ':' && !::isspace(symbol); })),
+                        fp::maybe(fp::tokenLeft(fp::symbol(':')))
+                        )(input);
+}
+
+auto getParser(std::string_view tag) -> fp::Parser auto
+{
+    using ParserT = std::function<fp::Result<TspData::Item>(std::string_view)>;
+    static const auto tagMap = std::unordered_map<std::string_view, ParserT> {
+        {NAME,                name},
+        {TYPE,                type},
+        {COMMENT,             comment},
+        {DIMENSION,           dimension},
+        {CAPACITY,            capacity},
+        {EDGE_WEIGHT_TYPE,    edgeWeightType},
+        {EDGE_WEIGHT_FORMAT,  edgeWeightFormat},
+        {EDGE_DATA_FORMAT,    edgeDataFormat},
+        {NODE_COORD_SECTION,  nodeCoordSection},
+        {EDGE_DATA_SECTION,   edgeDataSection},
+        {EDGE_WEIGHT_SECTION, edgeWeightSection}
+    };
+
+    const auto it = tagMap.find(tag);
+
+    if (it == tagMap.cend())
+    {
+        return ParserT {fp::sequence([](const auto&) -> TspData::Item { return {}; }, fp::line)};
+    }
+    else
+    {
+        return it->second;
+    }
 }
 
 auto tspData(std::string_view input) -> fp::Result<Config>
 {
+    const auto parser = fp::chain(fp::tokenLeft(tag), [](const auto& tagName) {
+        return getParser(tagName);
+    });
     return fp::sequence([](const auto& data) { return TspData {data}.filtered(); },
-                        fp::many(fp::tokenLeft(fp::choice(
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, name),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, type),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, comment),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, dimension),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, capacity),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeWeightType),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeWeightFormat),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeDataFormat),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, nodeCoordSection),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeDataSection),
-                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, edgeWeightSection),
-                            fp::sequence([](const auto&) -> TspData::Item { return {}; }, fp::line)
-                        )))
+                        fp::many(
+                            fp::sequence([](const auto& item) -> TspData::Item { return item; }, parser)
+                        )
     )(input);
 }
 
