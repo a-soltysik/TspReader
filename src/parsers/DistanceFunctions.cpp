@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <cmath>
 
-namespace tsp::detail
+namespace tsplib::detail
 {
 
 auto euclideanDistance(const Node2d& node1, const Node2d& node2) -> int32_t

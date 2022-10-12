@@ -5,7 +5,7 @@
 #include <vector>
 #include <optional>
 
-namespace tsp
+namespace tsplib
 {
 
 template<typename... Ts>

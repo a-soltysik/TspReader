@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <ranges>
 
-namespace tsp
+namespace tsplib
 {
 [[nodiscard]]
 auto makeGraphFromEdgeData(const std::vector<int32_t>& edgeData,

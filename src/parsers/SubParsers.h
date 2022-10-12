@@ -3,7 +3,7 @@
 #include "Parser.h"
 #include "Tags.h"
 
-namespace tsp
+namespace tsplib
 {
 
 template<typename T>

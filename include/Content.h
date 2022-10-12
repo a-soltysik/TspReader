@@ -5,7 +5,7 @@
 #include <optional>
 #include <string>
 
-namespace tsp
+namespace tsplib
 {
 
 enum class Type

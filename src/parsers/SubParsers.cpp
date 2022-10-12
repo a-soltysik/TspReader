@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace tsp
+namespace tsplib
 {
 
 template<typename ItemT>

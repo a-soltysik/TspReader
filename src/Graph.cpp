@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <numeric>
 
-namespace tsp
+namespace tsplib
 {
 
 Graph::Graph(size_t order)

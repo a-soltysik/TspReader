@@ -7,7 +7,7 @@
 #include <functional>
 #include <limits>
 
-namespace tsp
+namespace tsplib
 {
 
 class Graph

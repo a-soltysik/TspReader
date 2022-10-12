@@ -2,7 +2,7 @@
 
 #include "Content.h"
 
-namespace tsp
+namespace tsplib
 {
 
 [[nodiscard]]

@@ -4,118 +4,118 @@
 
 TEST(TspReaderTest, NameParserTest)
 {
-    EXPECT_EQ(std::get<tsp::Name>(tsp::name(" CoolName\nCOMMENT")->first).name, "CoolName");
+    EXPECT_EQ(std::get<tsplib::Name>(tsplib::name(" CoolName\nCOMMENT")->first).name, "CoolName");
 }
 
 TEST(TspReaderTest, CommentParserTest)
 {
-    EXPECT_EQ(std::get<tsp::Comment>(tsp::comment("\tCoolComment\nNAME")->first).comment, "CoolComment");
+    EXPECT_EQ(std::get<tsplib::Comment>(tsplib::comment("\tCoolComment\nNAME")->first).comment, "CoolComment");
 }
 
 TEST(TspReaderTest, TypeParserTest)
 {
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tTSP")->first), tsp::AlgorithmType::TSP);
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tATSP")->first), tsp::AlgorithmType::ATSP);
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tSOP")->first), tsp::AlgorithmType::SOP);
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tHCP")->first), tsp::AlgorithmType::HCP);
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tCRVP")->first), tsp::AlgorithmType::CRVP);
-    EXPECT_EQ(std::get<tsp::AlgorithmType>(tsp::type("\tTOUR")->first), tsp::AlgorithmType::TOUR);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tTSP")->first), tsplib::AlgorithmType::TSP);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tATSP")->first), tsplib::AlgorithmType::ATSP);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tSOP")->first), tsplib::AlgorithmType::SOP);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tHCP")->first), tsplib::AlgorithmType::HCP);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tCRVP")->first), tsplib::AlgorithmType::CRVP);
+    EXPECT_EQ(std::get<tsplib::AlgorithmType>(tsplib::type("\tTOUR")->first), tsplib::AlgorithmType::TOUR);
 }
 
 TEST(TspReaderTest, EdgeDataFormatParser)
 {
-    EXPECT_EQ(std::get<tsp::EdgeDataFormat>(tsp::edgeDataFormat(" EDGE_LIST\n")->first),
-              tsp::EdgeDataFormat::EDGE_LIST);
-    EXPECT_EQ(std::get<tsp::EdgeDataFormat>(tsp::edgeDataFormat(" ADJ_LIST\n")->first), tsp::EdgeDataFormat::ADJ_LIST);
+    EXPECT_EQ(std::get<tsplib::EdgeDataFormat>(tsplib::edgeDataFormat(" EDGE_LIST\n")->first),
+              tsplib::EdgeDataFormat::EDGE_LIST);
+    EXPECT_EQ(std::get<tsplib::EdgeDataFormat>(tsplib::edgeDataFormat(" ADJ_LIST\n")->first), tsplib::EdgeDataFormat::ADJ_LIST);
 }
 
 TEST(TspReaderTest, DimensionParserTest)
 {
-    EXPECT_EQ(std::get<tsp::Dimension>(tsp::dimension(" 45")->first).dimension, 45);
-    EXPECT_EQ(std::get<tsp::Dimension>(tsp::dimension("1001")->first).dimension, 1001);
-    EXPECT_EQ(std::get<tsp::Dimension>(tsp::dimension(" 1001.45")->first).dimension, 1001);
-    EXPECT_THROW(tsp::dimension("-1001").value(), std::bad_optional_access);
+    EXPECT_EQ(std::get<tsplib::Dimension>(tsplib::dimension(" 45")->first).dimension, 45);
+    EXPECT_EQ(std::get<tsplib::Dimension>(tsplib::dimension("1001")->first).dimension, 1001);
+    EXPECT_EQ(std::get<tsplib::Dimension>(tsplib::dimension(" 1001.45")->first).dimension, 1001);
+    EXPECT_THROW(tsplib::dimension("-1001").value(), std::bad_optional_access);
 }
 
 TEST(TspReaderTest, CapacityParserTest)
 {
-    EXPECT_EQ(std::get<tsp::Capacity>(tsp::capacity("45")->first).capacity, 45);
-    EXPECT_EQ(std::get<tsp::Capacity>(tsp::capacity(" 1001")->first).capacity, 1001);
-    EXPECT_EQ(std::get<tsp::Capacity>(tsp::capacity(" 1001.45")->first).capacity, 1001);
-    EXPECT_THROW(tsp::capacity(" -1001").value(), std::bad_optional_access);
+    EXPECT_EQ(std::get<tsplib::Capacity>(tsplib::capacity("45")->first).capacity, 45);
+    EXPECT_EQ(std::get<tsplib::Capacity>(tsplib::capacity(" 1001")->first).capacity, 1001);
+    EXPECT_EQ(std::get<tsplib::Capacity>(tsplib::capacity(" 1001.45")->first).capacity, 1001);
+    EXPECT_THROW(tsplib::capacity(" -1001").value(), std::bad_optional_access);
 }
 
 TEST(TspReaderTest, EdgeWeightTypeParser)
 {
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" EXPLICIT")->first), tsp::EdgeWeightType::EXPLICIT);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" EUC_2D")->first), tsp::EdgeWeightType::EUC);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" EUC_3D")->first), tsp::EdgeWeightType::EUC);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" MAX_2D")->first), tsp::EdgeWeightType::MAX);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" MAX_3D")->first), tsp::EdgeWeightType::MAX);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" MAN_2D")->first), tsp::EdgeWeightType::MAN);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" MAN_3D")->first), tsp::EdgeWeightType::MAN);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" CEIL_2D")->first), tsp::EdgeWeightType::CEIL);
-    EXPECT_EQ(std::get<tsp::EdgeWeightType>(tsp::edgeWeightType(" GEO")->first), tsp::EdgeWeightType::GEO);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" EXPLICIT")->first), tsplib::EdgeWeightType::EXPLICIT);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" EUC_2D")->first), tsplib::EdgeWeightType::EUC);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" EUC_3D")->first), tsplib::EdgeWeightType::EUC);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" MAX_2D")->first), tsplib::EdgeWeightType::MAX);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" MAX_3D")->first), tsplib::EdgeWeightType::MAX);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" MAN_2D")->first), tsplib::EdgeWeightType::MAN);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" MAN_3D")->first), tsplib::EdgeWeightType::MAN);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" CEIL_2D")->first), tsplib::EdgeWeightType::CEIL);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightType>(tsplib::edgeWeightType(" GEO")->first), tsplib::EdgeWeightType::GEO);
 }
 
 TEST(TspReaderTest, EdgeWeightFormatParser)
 {
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" FUNCTION \n")->first),
-              tsp::EdgeWeightFormat::FUNCTION);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" FULL_MATRIX \n")->first),
-              tsp::EdgeWeightFormat::FULL_MATRIX);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" UPPER_ROW \n")->first),
-              tsp::EdgeWeightFormat::UPPER_ROW);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" LOWER_ROW \n")->first),
-              tsp::EdgeWeightFormat::LOWER_ROW);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" UPPER_DIAG_ROW \n")->first),
-              tsp::EdgeWeightFormat::UPPER_DIAG_ROW);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" LOWER_DIAG_ROW \n")->first),
-              tsp::EdgeWeightFormat::LOWER_DIAG_ROW);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" UPPER_COL \n")->first),
-              tsp::EdgeWeightFormat::UPPER_COL);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" LOWER_COL \n")->first),
-              tsp::EdgeWeightFormat::LOWER_COL);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" UPPER_DIAG_COL \n")->first),
-              tsp::EdgeWeightFormat::UPPER_DIAG_COL);
-    EXPECT_EQ(std::get<tsp::EdgeWeightFormat>(tsp::edgeWeightFormat(" LOWER_DIAG_COL \n")->first),
-              tsp::EdgeWeightFormat::LOWER_DIAG_COL);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" FUNCTION \n")->first),
+              tsplib::EdgeWeightFormat::FUNCTION);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" FULL_MATRIX \n")->first),
+              tsplib::EdgeWeightFormat::FULL_MATRIX);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" UPPER_ROW \n")->first),
+              tsplib::EdgeWeightFormat::UPPER_ROW);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" LOWER_ROW \n")->first),
+              tsplib::EdgeWeightFormat::LOWER_ROW);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" UPPER_DIAG_ROW \n")->first),
+              tsplib::EdgeWeightFormat::UPPER_DIAG_ROW);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" LOWER_DIAG_ROW \n")->first),
+              tsplib::EdgeWeightFormat::LOWER_DIAG_ROW);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" UPPER_COL \n")->first),
+              tsplib::EdgeWeightFormat::UPPER_COL);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" LOWER_COL \n")->first),
+              tsplib::EdgeWeightFormat::LOWER_COL);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" UPPER_DIAG_COL \n")->first),
+              tsplib::EdgeWeightFormat::UPPER_DIAG_COL);
+    EXPECT_EQ(std::get<tsplib::EdgeWeightFormat>(tsplib::edgeWeightFormat(" LOWER_DIAG_COL \n")->first),
+              tsplib::EdgeWeightFormat::LOWER_DIAG_COL);
 }
 
 TEST(TspReaderTest, Node2dParser)
 {
-    auto node = tsp::node2d("1 2 3\n")->first;
+    auto node = tsplib::node2d("1 2 3\n")->first;
     EXPECT_EQ(node.id, 1);
     EXPECT_FLOAT_EQ(node.x, 2);
     EXPECT_FLOAT_EQ(node.y, 3);
 
-    node = tsp::node2d("3245 345.3 -0.234\n")->first;
+    node = tsplib::node2d("3245 345.3 -0.234\n")->first;
     EXPECT_EQ(node.id, 3245);
     EXPECT_FLOAT_EQ(node.x, 345.3f);
     EXPECT_FLOAT_EQ(node.y, -0.234f);
 
-    ASSERT_THROW(tsp::node2d("1.0 345.3 -0.234\n").value(), std::bad_optional_access);
-    ASSERT_THROW(tsp::node2d("1 345.3 \n -0.234\n").value(), std::bad_optional_access);
-    ASSERT_THROW(tsp::node2d("1 36266.6667 62550.0000 3.0\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node2d("1.0 345.3 -0.234\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node2d("1 345.3 \n -0.234\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node2d("1 36266.6667 62550.0000 3.0\n").value(), std::bad_optional_access);
 }
 
 TEST(TspReaderTest, Node3dParser)
 {
-    auto node = tsp::node3d("1 2 3 4\n")->first;
+    auto node = tsplib::node3d("1 2 3 4\n")->first;
     EXPECT_EQ(node.id, 1);
     EXPECT_FLOAT_EQ(node.x, 2);
     EXPECT_FLOAT_EQ(node.y, 3);
     EXPECT_FLOAT_EQ(node.z, 4);
 
-    node = tsp::node3d("3245 345.3 -0.234 21\n")->first;
+    node = tsplib::node3d("3245 345.3 -0.234 21\n")->first;
     EXPECT_EQ(node.id, 3245);
     EXPECT_FLOAT_EQ(node.x, 345.3f);
     EXPECT_FLOAT_EQ(node.y, -0.234f);
     EXPECT_FLOAT_EQ(node.z, 21);
 
-    ASSERT_THROW(tsp::node3d("1.0 345.3 -0.234 23\n").value(), std::bad_optional_access);
-    ASSERT_THROW(tsp::node3d("1 345.3 -0.234\n").value(), std::bad_optional_access);
-    ASSERT_THROW(tsp::node3d("1 345.3 -0.234\n 3\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node3d("1.0 345.3 -0.234 23\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node3d("1 345.3 -0.234\n").value(), std::bad_optional_access);
+    ASSERT_THROW(tsplib::node3d("1 345.3 -0.234\n 3\n").value(), std::bad_optional_access);
 }
 
 TEST(TspReaderTest, NodeCoordSection)
@@ -127,13 +127,13 @@ TEST(TspReaderTest, NodeCoordSection)
                                     "3 51650.0000 72300.0000\n"
                                     "4 37800.0000 67683.3333\n"sv;
 
-    auto nodes2dParsed = tsp::nodeCoordSection(nodes2d);
+    auto nodes2dParsed = tsplib::nodeCoordSection(nodes2d);
     EXPECT_NO_THROW(nodes2dParsed.value());
-    EXPECT_NO_THROW(std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord));
-    EXPECT_EQ(std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d.size(),
+    EXPECT_NO_THROW(std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord));
+    EXPECT_EQ(std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d.size(),
               4);
     EXPECT_FLOAT_EQ(
-        std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d[2].y, 72300);
+        std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d[2].y, 72300);
 
     static constexpr auto nodes3d = "\n"
                                     "1 36266.6667 62550.0000 3.0\n"
@@ -141,21 +141,21 @@ TEST(TspReaderTest, NodeCoordSection)
                                     "3 51650.0000 72300.0000 9.2\n"
                                     "4 37800.0000 67683.3333 5\n"sv;
 
-    auto nodes3dParsed = tsp::nodeCoordSection(nodes3d);
+    auto nodes3dParsed = tsplib::nodeCoordSection(nodes3d);
 
     EXPECT_NO_THROW(nodes3dParsed.value());
-    EXPECT_NO_THROW(std::get<tsp::Nodes3d>(std::get<tsp::NodeCoordSection>(nodes3dParsed->first).nodesCoord));
-    EXPECT_EQ(std::get<tsp::Nodes3d>(std::get<tsp::NodeCoordSection>(nodes3dParsed->first).nodesCoord).nodes3d.size(),
+    EXPECT_NO_THROW(std::get<tsplib::Nodes3d>(std::get<tsplib::NodeCoordSection>(nodes3dParsed->first).nodesCoord));
+    EXPECT_EQ(std::get<tsplib::Nodes3d>(std::get<tsplib::NodeCoordSection>(nodes3dParsed->first).nodesCoord).nodes3d.size(),
               4);
     EXPECT_FLOAT_EQ(
-        std::get<tsp::Nodes3d>(std::get<tsp::NodeCoordSection>(nodes3dParsed->first).nodesCoord).nodes3d[2].z, 9.2f);
+        std::get<tsplib::Nodes3d>(std::get<tsplib::NodeCoordSection>(nodes3dParsed->first).nodesCoord).nodes3d[2].z, 9.2f);
 
     static constexpr auto nodesError = "\n"
                                        "1 36266.6667\n"
                                        "2 34600.0000\n"
                                        "3 51650.0000\n"
                                        "4 37800.0000\n"sv;
-    nodes2dParsed = tsp::nodeCoordSection(nodesError);
+    nodes2dParsed = tsplib::nodeCoordSection(nodesError);
 
     EXPECT_THROW(nodes2dParsed.value(), std::bad_optional_access);
 
@@ -165,17 +165,17 @@ TEST(TspReaderTest, NodeCoordSection)
                                      "3 51650.0000 72300.0000\n"
                                      "4 37800.0000 67683.3333 5\n"sv;
 
-    nodes2dParsed = tsp::nodeCoordSection(nodesMix);
+    nodes2dParsed = tsplib::nodeCoordSection(nodesMix);
 
     EXPECT_NO_THROW(nodes2dParsed.value());
-    EXPECT_NO_THROW(std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord));
-    EXPECT_EQ(std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d.size(),
+    EXPECT_NO_THROW(std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord));
+    EXPECT_EQ(std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d.size(),
               1);
     EXPECT_FLOAT_EQ(
-        std::get<tsp::Nodes2d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d[0].y,
+        std::get<tsplib::Nodes2d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord).nodes2d[0].y,
         62550.0000f);
 
-    EXPECT_THROW(std::get<tsp::Nodes3d>(std::get<tsp::NodeCoordSection>(nodes2dParsed->first).nodesCoord),
+    EXPECT_THROW(std::get<tsplib::Nodes3d>(std::get<tsplib::NodeCoordSection>(nodes2dParsed->first).nodesCoord),
                  std::bad_variant_access);
 }
 
@@ -195,20 +195,20 @@ TEST(TspReaderTest, edgeDataSectionParser)
                                     "3 2 4 5 -1\n"
                                     "-1\n"sv;
 
-    const auto edgeDataResult = tsp::edgeDataSection(edgeList);
+    const auto edgeDataResult = tsplib::edgeDataSection(edgeList);
     ASSERT_NO_THROW(edgeDataResult.value());
-    ASSERT_NO_THROW(std::get<tsp::EdgeDataSection>(edgeDataResult->first));
-    const auto edgeData       = std::get<tsp::EdgeDataSection>(edgeDataResult->first).edgeData;
+    ASSERT_NO_THROW(std::get<tsplib::EdgeDataSection>(edgeDataResult->first));
+    const auto edgeData       = std::get<tsplib::EdgeDataSection>(edgeDataResult->first).edgeData;
 
     ASSERT_EQ(edgeData.size(), 7);
     EXPECT_EQ(edgeData.front(), 1);
     EXPECT_EQ(edgeData.back(), -1);
 
 
-    const auto adjDataResult = tsp::edgeDataSection(adjList);
+    const auto adjDataResult = tsplib::edgeDataSection(adjList);
     ASSERT_NO_THROW(adjDataResult.value());
-    ASSERT_NO_THROW(std::get<tsp::EdgeDataSection>(adjDataResult->first));
-    const auto adjData       = std::get<tsp::EdgeDataSection>(adjDataResult->first).edgeData;
+    ASSERT_NO_THROW(std::get<tsplib::EdgeDataSection>(adjDataResult->first));
+    const auto adjData       = std::get<tsplib::EdgeDataSection>(adjDataResult->first).edgeData;
 
     ASSERT_EQ(adjData.size(), 17);
     EXPECT_EQ(adjData.front(), 1);
@@ -263,7 +263,7 @@ TEST(TspReaderTest, tspDataParser)
                                      " 9999\n"
                                      "EOF";
 
-    const auto config = tsp::tspData(instance);
+    const auto config = tsplib::tspData(instance);
     ASSERT_NO_THROW(config.value());
     ASSERT_NO_THROW(config->first.specification.name.value());
     EXPECT_EQ(config->first.specification.name.value(), "br17");
@@ -278,10 +278,10 @@ TEST(TspReaderTest, tspDataParser)
     EXPECT_EQ(config->first.specification.dimension.value(), 17);
 
     ASSERT_NO_THROW(config->first.specification.edgeWeightType.value());
-    EXPECT_EQ(config->first.specification.edgeWeightType.value(), tsp::EdgeWeightType::EXPLICIT);
+    EXPECT_EQ(config->first.specification.edgeWeightType.value(), tsplib::EdgeWeightType::EXPLICIT);
 
     ASSERT_NO_THROW(config->first.specification.edgeWeightFormat.value());
-    EXPECT_EQ(config->first.specification.edgeWeightFormat.value(), tsp::EdgeWeightFormat::FULL_MATRIX);
+    EXPECT_EQ(config->first.specification.edgeWeightFormat.value(), tsplib::EdgeWeightFormat::FULL_MATRIX);
 
     ASSERT_NO_THROW(config->first.data.edgeWeightSection.value());
 

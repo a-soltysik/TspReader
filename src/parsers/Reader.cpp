@@ -2,7 +2,7 @@
 #include "SubParsers.h"
 #include "GraphParser.h"
 
-namespace tsp
+namespace tsplib
 {
 
 auto getGraphFromConfig(const Config& config) -> std::optional<Graph>;

@@ -3,7 +3,7 @@
 #include "Tags.h"
 #include <functional>
 
-namespace tsp
+namespace tsplib
 {
 
 template<typename DF>

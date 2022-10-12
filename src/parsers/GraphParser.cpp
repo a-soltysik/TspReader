@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace tsp
+namespace tsplib
 {
 
 auto makeGraphFromFullMatrix(const std::vector<int32_t>& weights) -> std::optional<Graph>;

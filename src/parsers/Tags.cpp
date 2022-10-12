@@ -1,6 +1,6 @@
 #include "Tags.h"
 
-namespace tsp
+namespace tsplib
 {
 
 auto TspData::filtered() -> Config
