@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include "utils/utils.h"
 
 #include <algorithm>
 #include <numeric>
@@ -90,6 +91,11 @@ auto Graph::getWeight(Edge edge) const -> std::optional<Weight>
     {
         return {};
     }
+    return graph[edge.first][edge.second];
+}
+
+auto Graph::getWeightUnchecked(Graph::Edge edge) const -> Weight
+{
     return graph[edge.first][edge.second];
 }
 
@@ -229,6 +235,183 @@ auto Graph::forEachEdge(const EdgePredicate& predicate) const -> void
             }
         }
     }
+}
+
+auto Graph::toString() const -> std::string
+{
+    std::string result = "\n";
+    const auto columnWidth = getColumnWidth();
+    const auto separator = rowSeparator(getSize() + 1, columnWidth);
+
+    for (uint32_t i = 0; i <= getOrder(); i++)
+    {
+        for (uint32_t j = 0; j <= getSize(); j++)
+        {
+            if (i == 0)
+            {
+                if (j == 0)
+                {
+                    result += std::string(columnWidth, ' ') + utils::DOUBLE_VERTICAL_BAR;
+                }
+                else
+                {
+                    const auto number = utils::numberToString(j - 1);
+                    result += utils::putInStringCenter(number, columnWidth) + utils::VERTICAL_BAR;
+                }
+            }
+            else
+            {
+                if (j == 0)
+                {
+                    const auto number = utils::numberToString(i - 1);
+                    result += utils::putInStringCenter(number, columnWidth) + utils::DOUBLE_VERTICAL_BAR;
+                }
+                else
+                {
+                    auto number = std::string{};
+                    if (graph[i - 1][j - 1] == INFINITY_WEIGHT)
+                    {
+                        number = "inf";
+                    }
+                    else
+                    {
+                        number = utils::numberToString(graph[i - 1][j - 1]);
+                    }
+                    result += utils::putInStringCenter(number, columnWidth) + utils::VERTICAL_BAR;
+                }
+            }
+        }
+        if (i == 0)
+        {
+            result += "\n" + openingSeparator(getSize() + 1, columnWidth) + "\n";
+        }
+        else if (i != getOrder())
+        {
+            result += "\n" + separator + "\n";
+        }
+        else
+        {
+            result += "\n" + closingSeparator(getSize() + 1, columnWidth);
+        }
+    }
+    return result;
+}
+
+auto Graph::getColumnWidth() const -> size_t
+{
+    auto columnWidth = size_t{};
+    for (uint32_t i = 0; i <= getSize(); i++)
+    {
+        if (i == 0)
+        {
+            const auto length = utils::numberToString(getOrder() - 1).length();
+            if (length > columnWidth)
+            {
+                columnWidth = length;
+            }
+        }
+        else
+        {
+            for (uint32_t j = 0; j <= getOrder(); j++)
+            {
+                auto weightLength = size_t{};
+                if (j == 0)
+                {
+                    weightLength = utils::numberToString(i - 1).length();
+                }
+                else if (graph[j - 1][i - 1] == INFINITY_WEIGHT)
+                {
+                    weightLength = 3;
+                }
+                else
+                {
+                    weightLength = utils::numberToString(graph[j - 1][i - 1]).length();
+                }
+
+                if (weightLength > columnWidth)
+                {
+                    columnWidth = weightLength;
+                }
+            }
+        }
+    }
+
+    return columnWidth;
+}
+
+auto Graph::rowSeparator(size_t columns, size_t columnWidth) -> std::string
+{
+    auto result = std::string{};
+    for (uint32_t i = 0; i < columns; i++)
+    {
+        for (uint32_t j = 0; j < columnWidth; j++)
+        {
+            result += utils::HORIZONTAL_BAR;
+        }
+        if (i == 0)
+        {
+            result += utils::DOUBLE_VERTICAL_BAR_HORIZONTAL_BAR;
+        }
+        else if (i != columns - 1)
+        {
+            result += utils::CROSS;
+        }
+        else
+        {
+            result += utils::VERTICAL_BAR_LEFT;
+        }
+    }
+    return result;
+}
+
+auto Graph::closingSeparator(size_t columns, size_t columnWidth) -> std::string
+{
+    auto result = std::string{};
+    for (uint32_t i = 0; i < columns; i++)
+    {
+        for (uint32_t j = 0; j < columnWidth; j++)
+        {
+            result += utils::HORIZONTAL_BAR;
+        }
+        if (i == 0)
+        {
+            result += utils::HORIZONTAL_BAR_DOUBLE_UP;
+        }
+        else if (i != columns - 1)
+        {
+            result += utils::HORIZONTAL_BAR_UP;
+        }
+        else
+        {
+            result += utils::UP_LEFT;
+        }
+    }
+    return result;
+}
+
+auto Graph::openingSeparator(size_t columns, size_t columnWidth) -> std::string
+{
+    auto result = std::string{};
+    for (uint32_t i = 0; i < columns; i++)
+    {
+        for (uint32_t j = 0; j < columnWidth; j++)
+        {
+            result += utils::DOUBLE_HORIZONTAL_BAR;
+        }
+        if (i == 0)
+        {
+            result += utils::DOUBLE_CROSS;
+        }
+        else if (i != columns - 1)
+        {
+            result += utils::DOUBLE_HORIZONTAL_BAR_VERTICAL_BAR;
+        }
+        else
+        {
+            result += utils::VERTICAL_BAR_DOUBLE_LEFT;
+        }
+    }
+    return result;
 }
 
 }

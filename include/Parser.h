@@ -1,11 +1,8 @@
 #pragma once
 
-#include <optional>
-#include <string>
+#include "utils/Numbers.h"
+
 #include <functional>
-#include <limits>
-#include <stdexcept>
-#include <charconv>
 
 /**
  * C++20 functional parser created by Petter Holmberg
@@ -345,83 +342,7 @@ constexpr Parser auto flatten(P parser)
 
 // Helpers
 
-template<std::integral T>
-constexpr auto maxLengthOfType() -> uint32_t
-{
-    return std::numeric_limits<T>::digits10 + 2;
-}
 
-template<std::floating_point T>
-constexpr auto maxLengthOfType() -> uint32_t
-{
-    return std::numeric_limits<T>::max_exponent10 +
-           std::numeric_limits<T>::max_digits10 + 2;
-}
-
-template<std::integral T>
-[[nodiscard]] auto stringToNumber(const std::string& number) -> std::optional<T>
-{
-    T result;
-    const auto [ptr, code] {std::from_chars(number.data(), number.data() + number.size(), result)};
-
-    if (code == std::errc::invalid_argument || code == std::errc::result_out_of_range)
-    {
-        return {};
-    }
-
-    return result;
-}
-
-/**
- * GCC and clang does not support std::from_chars for floating point types (although it is standardized)
- */
-#if defined(_MSC_VER)
-
-template<std::floating_point T>
-auto stringToNumber(const std::string& number) -> std::optional<T>
-{
-    T result;
-    auto const[ptr, code] {std::from_chars(number.data(), number.data() + number.size(), result)};
-
-    if (code == std::errc::invalid_argument || code == std::errc::result_out_of_range)
-    {
-        return {};
-    }
-
-    return result;
-}
-
-#else
-
-template<std::floating_point T>
-auto stringToNumber(const std::string& number) -> std::optional<T>
-{
-    try
-    {
-        if constexpr (std::same_as<T, float>)
-        {
-            return std::stof(number);
-        }
-        else if constexpr (std::same_as<T, double>)
-        {
-            return std::stod(number);
-        }
-        else
-        {
-            return std::stold(number);
-        }
-    }
-    catch (const std::out_of_range& e)
-    {
-        return {};
-    }
-    catch (const std::invalid_argument& e)
-    {
-        return {};
-    }
-}
-
-#endif
 
 inline bool isEol(char symbol)
 {
@@ -483,13 +404,13 @@ constexpr Parser auto tokenRight(Parser auto parser, P toSkip = whitespaces)
 
 template<std::integral T = int32_t>
 Parser auto natural = flatten(sequence(
-    [](auto const& str) { return stringToNumber<T>(str); },
+    [](auto const& str) { return tsplib::utils::stringToNumber<T>(str); },
     some(digit)
 ));
 
 template<std::integral T = int32_t>
 Parser auto negative = flatten(sequence(
-    [](const auto ch, const auto& str) { return stringToNumber<T>(std::string {ch} + str); },
+    [](const auto ch, const auto& str) { return tsplib::utils::stringToNumber<T>(std::string {ch} + str); },
     symbol('-'),
     some(digit)
 ));
@@ -502,7 +423,7 @@ Parser auto integer = choice(
 );
 
 template<std::floating_point T = double>
-Parser auto real = flatten(sequence([](const auto& str) { return stringToNumber<T>(str); },
+Parser auto real = flatten(sequence([](const auto& str) { return tsplib::utils::stringToNumber<T>(str); },
                                     choice(
                                         sequence([](auto minus, const auto& x, auto, const auto& y) {
                                                      return

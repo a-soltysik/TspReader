@@ -63,6 +63,7 @@ public:
 
     [[nodiscard]]
     auto getWeight(Edge edge) const -> std::optional<Weight>;
+    auto getWeightUnchecked(Edge edge) const -> Weight;
     auto setWeight(Edge edge, Weight weight) -> bool;
 
     [[nodiscard]]
@@ -85,6 +86,15 @@ public:
     auto toString() const -> std::string;
 
 private:
+    [[nodiscard]]
+    auto getColumnWidth() const -> size_t;
+    [[nodiscard]]
+    static auto rowSeparator(size_t columns, size_t columnWidth) -> std::string;
+    [[nodiscard]]
+    static auto closingSeparator(size_t columns, size_t columnWidth) -> std::string;
+    [[nodiscard]]
+    static auto openingSeparator(size_t columns, size_t columnWidth) -> std::string;
+
     std::vector<std::vector<Weight>> graph;
     size_t size = 0;
 };
