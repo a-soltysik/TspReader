@@ -1,6 +1,7 @@
 #include "GraphParser.h"
 
 #include <cmath>
+#include <iostream>
 
 namespace tsplib
 {
@@ -27,13 +28,14 @@ auto makeGraphFromFullMatrix(const std::vector<int32_t>& weights) -> std::option
     {
         return {};
     }
+
     auto result = Graph{size};
 
     auto i = size_t {};
     auto j = size_t {};
     for (auto weight : weights)
     {
-        result.addEdge({{i, j}, weight});
+        result.addEdge({{j, i}, weight});
 
         if (++i == size)
         {
