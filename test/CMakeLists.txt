@@ -20,13 +20,20 @@ set(${TEST_NAME}_SRC_LIST
     ${${PROJECT_NAME}_SRC_DIR}/parsers/GraphParser.cpp
     )
 
-set(${TEST_NAME}_SRC_LIST
-    ${${TEST_NAME}_SRC_LIST}
-    ${${TEST_NAME}_SRC_DIR}/main.cpp
-    ${${TEST_NAME}_SRC_DIR}/parsers/ParserTest.cpp
-    ${${TEST_NAME}_SRC_DIR}/parsers/SubParsersTest.cpp
-    ${${TEST_NAME}_SRC_DIR}/parsers/ReaderTest.cpp
-    )
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
+    set(${TEST_NAME}_SRC_LIST
+        ${${TEST_NAME}_SRC_LIST}
+        ${${TEST_NAME}_SRC_DIR}/main.cpp
+        ${${TEST_NAME}_SRC_DIR}/parsers/ParserTest.cpp
+        ${${TEST_NAME}_SRC_DIR}/parsers/SubParsersTest.cpp
+        ${${TEST_NAME}_SRC_DIR}/parsers/ReaderTest.cpp
+        )
+else()
+    message("Cannot compile parsers on debug build!")
+    set(${TEST_NAME}_SRC_LIST
+        ${${TEST_NAME}_SRC_DIR}/main.cpp)
+endif(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
+
 
 add_executable(${TEST_NAME} ${${TEST_NAME}_SRC_LIST})
 target_include_directories(${TEST_NAME}

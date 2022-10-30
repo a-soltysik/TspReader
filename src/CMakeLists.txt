@@ -1,9 +1,16 @@
 set(${PROJECT_NAME}_SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 
-file(GLOB_RECURSE ${PROJECT_NAME}_SRC_LIST
-    ${${PROJECT_NAME}_SRC_DIR}/*.h
-    ${${PROJECT_NAME}_SRC_DIR}/*.cpp
-    )
+if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
+    file(GLOB_RECURSE ${PROJECT_NAME}_SRC_LIST
+        ${${PROJECT_NAME}_SRC_DIR}/*.h
+        ${${PROJECT_NAME}_SRC_DIR}/*.cpp
+        )
+else()
+    message("Cannot compile parsers on debug build!")
+    set(${PROJECT_NAME}_SRC_LIST
+        ${${PROJECT_NAME}_SRC_DIR}/Graph.cpp
+        )
+endif(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
 
 file(GLOB_RECURSE ${PROJECT_NAME}_INC_LIST
     ${${PROJECT_NAME}_INC_DIR}/*.h

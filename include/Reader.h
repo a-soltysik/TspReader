@@ -2,6 +2,8 @@
 
 #include "Content.h"
 
+#ifdef NDEBUG
+
 namespace tsplib
 {
 
@@ -9,3 +11,5 @@ namespace tsplib
 auto getTspContent(std::string_view input) -> std::optional<Content>;
 
 }
+
+#endif
