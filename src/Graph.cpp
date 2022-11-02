@@ -414,4 +414,19 @@ auto Graph::openingSeparator(size_t columns, size_t columnWidth) -> std::string
     return result;
 }
 
+auto Graph::isEmpty() const -> bool
+{
+    return getOrder() == 0;
+}
+
+auto Graph::isComplete() const -> bool
+{
+    return size == getOrder() * (getOrder() - 1) && !isEmpty() && !isEdgeless();
+}
+
+auto Graph::isEdgeless() const -> bool
+{
+    return size == 0;
+}
+
 }

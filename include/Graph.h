@@ -53,6 +53,13 @@ public:
     auto removeEdge(Edge edge) -> bool;
 
     [[nodiscard]]
+    auto isEmpty() const -> bool;
+    [[nodiscard]]
+    auto isEdgeless() const -> bool;
+    [[nodiscard]]
+    auto isComplete() const -> bool;
+
+    [[nodiscard]]
     auto getOrder() const -> size_t;
     [[nodiscard]]
     auto getSize() const -> size_t;
@@ -63,6 +70,7 @@ public:
 
     [[nodiscard]]
     auto getWeight(Edge edge) const -> std::optional<Weight>;
+    [[nodiscard]]
     auto getWeightUnchecked(Edge edge) const -> Weight;
     auto setWeight(Edge edge, Weight weight) -> bool;
 
