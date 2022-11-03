@@ -7,8 +7,10 @@ if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         )
 else()
     message("Cannot compile parsers on debug build!")
+    message("Mocking Reader.cpp")
     set(${PROJECT_NAME}_SRC_LIST
         ${${PROJECT_NAME}_SRC_DIR}/Graph.cpp
+        ${${PROJECT_NAME}_SRC_DIR}/parsers/Reader.cpp
         )
 endif(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
 

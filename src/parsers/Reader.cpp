@@ -5,6 +5,8 @@
 namespace tsplib
 {
 
+#ifndef NDEBUG
+
 auto getGraphFromConfig(const Config& config) -> std::optional<Graph>;
 auto getTypeFromConfig(const Config& config) -> std::optional<Type>;
 
@@ -110,4 +112,12 @@ auto canGraphBeMadeFromWeights(const Config& config) -> bool
     return config.data.edgeWeightSection.has_value() && config.specification.edgeWeightFormat.has_value();
 }
 
+#else
+
+auto getTspContent([[maybe_unused]] std::string_view input) -> std::optional<Content>
+{
+    return {};
+}
+
+#endif
 }

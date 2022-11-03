@@ -29,7 +29,7 @@ if(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
         ${${TEST_NAME}_SRC_DIR}/parsers/ReaderTest.cpp
         )
 else()
-    message("Cannot compile parsers on debug build!")
+    message("${TEST_NAME} cannot be run on debug build")
     set(${TEST_NAME}_SRC_LIST
         ${${TEST_NAME}_SRC_DIR}/main.cpp)
 endif(NOT ${CMAKE_BUILD_TYPE} MATCHES Debug)
