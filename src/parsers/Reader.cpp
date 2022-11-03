@@ -1,11 +1,14 @@
 #include "Reader.h"
+
+#ifdef NDEBUG
 #include "SubParsers.h"
 #include "GraphParser.h"
+#endif
 
 namespace tsplib
 {
 
-#ifndef NDEBUG
+#ifdef NDEBUG
 
 auto getGraphFromConfig(const Config& config) -> std::optional<Graph>;
 auto getTypeFromConfig(const Config& config) -> std::optional<Type>;
