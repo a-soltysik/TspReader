@@ -5,6 +5,7 @@
 #include <optional>
 #include <sstream>
 #include <iomanip>
+#include <array>
 
 namespace tsplib::utils
 {
