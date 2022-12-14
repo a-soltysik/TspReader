@@ -241,11 +241,11 @@ auto Graph::toString() const -> std::string
 {
     std::string result = "\n";
     const auto columnWidth = getColumnWidth();
-    const auto separator = rowSeparator(getSize() + 1, columnWidth);
+    const auto separator = rowSeparator(getOrder() + 1, columnWidth);
 
     for (uint32_t i = 0; i <= getOrder(); i++)
     {
-        for (uint32_t j = 0; j <= getSize(); j++)
+        for (uint32_t j = 0; j <= getOrder(); j++)
         {
             if (i == 0)
             {
@@ -283,7 +283,7 @@ auto Graph::toString() const -> std::string
         }
         if (i == 0)
         {
-            result += "\n" + openingSeparator(getSize() + 1, columnWidth) + "\n";
+            result += "\n" + openingSeparator(getOrder() + 1, columnWidth) + "\n";
         }
         else if (i != getOrder())
         {
@@ -291,7 +291,7 @@ auto Graph::toString() const -> std::string
         }
         else
         {
-            result += "\n" + closingSeparator(getSize() + 1, columnWidth);
+            result += "\n" + closingSeparator(getOrder() + 1, columnWidth);
         }
     }
     return result;
@@ -300,7 +300,7 @@ auto Graph::toString() const -> std::string
 auto Graph::getColumnWidth() const -> size_t
 {
     auto columnWidth = size_t{};
-    for (uint32_t i = 0; i <= getSize(); i++)
+    for (uint32_t i = 0; i <= getOrder(); i++)
     {
         if (i == 0)
         {
